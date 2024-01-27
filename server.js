@@ -1,14 +1,8 @@
 const express = require('express')
-const { Sequelize } = require('sequelize');
 const bodyparser = require('body-parser');
 const cors = require('cors');
 const app = express()
 const port = 8000
-
-const sequelize = new Sequelize('verceldb', 'default', 'lVaf7WMOKJ8Y', {
-    host: 'ep-soft-bread-a44ca8gy-pooler.us-east-1.postgres.vercel-storage.com',
-    dialect: 'postgres'
-});
 
 app.use(cors({
     origin: 'chrome-extension://aobdobofgmceopekcehnnmnbcbjdhkmj',
@@ -16,10 +10,9 @@ app.use(cors({
 }))
 
 app.use(bodyparser.json());
-app.post('/send-url', async (req, res) => {
+app.post('/send-url', (req, res) => {
     console.log(req.body);
-    const a = await sequelize.authenticate();
-    res.send('Hello World!');
+    res.send('Hello World!')
 })
 
 app.listen(port, () => {
