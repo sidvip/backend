@@ -8,15 +8,16 @@
     <input type="text" onchange="searchInput(this)"/>
   </div>
   <div>
-    <table>
-      <% for(var i=0; i < rows.length; i++) { %>
-         <tr>
-           <td><%= i+1 %> - <%= rows[i].url %></td>
-         </tr>
-      <% } %>
-      </table>
-  </div>
-  <div>
-    <% (rows.length === 0 && <div>No data found</div>) %>
+    <% if(rows.length === 0){ %>
+      <h1>No records found</h1>
+    <% } else{ %>  
+      <table>
+        <% for(var i=0; i < rows.length; i++) { %>
+           <tr>
+             <td><%= i+1 %> - <%= rows[i].url %></td>
+           </tr>
+        <% } %>
+        </table>
+   <% } %>
   </div>
 </main>
