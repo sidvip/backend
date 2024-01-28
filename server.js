@@ -10,12 +10,12 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
 app.use(cors({
-    origin: 'chrome-extension://aobdobofgmceopekcehnnmnbcbjdhkmj',
+    origin: 'chrome-extension://aobdobofgmceopekcehnnmnbcbjdhkmj', // add chrome estension url
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }))
 
 const client = createClient({
-    connectionString: 'postgres://default:lVaf7WMOKJ8Y@ep-soft-bread-a44ca8gy.us-east-1.postgres.vercel-storage.com/verceldb',
+    // connectionString: 'postgres://default:{password}@{host}/{database}',
 })
 
 app.use(bodyparser.json());
