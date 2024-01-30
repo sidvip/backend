@@ -1,16 +1,13 @@
 const express = require('express')
-const { sql, createClient } = require('@vercel/postgres');
+const { createClient } = require('@vercel/postgres');
 
 const bodyparser = require('body-parser');
 const cors = require('cors');
 const app = express()
 const port = 8000
 
-app.set('view engine', 'ejs');
-app.use(express.static(__dirname + '/public'));
-
 app.use(cors({
-    origin: 'chrome-extension://aobdobofgmceopekcehnnmnbcbjdhkmj', // add chrome estension url
+    origin: "*", // add chrome estension url
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }))
 
@@ -19,9 +16,13 @@ const client = createClient({
 })
 
 app.use(bodyparser.json());
-app.post('/send-url', async (req, res) => {
+app.use(bodyparser.urlencoded({ extended: true }));
+
+app.get('/add-url', async (req, res) => {
+    const { email, url } = req.query;
     try {
-        const data = await client.sql`INSERT INTO history (Url, User_id) VALUES (${req.body.url}, 1);`;
+        await client.sql`CREATE TABLE IF NOT EXISTS url_tracker (Url varchar(255), email varchar(255));`;
+        const data = await client.sql`INSERT INTO url_tracker (Url, email) VALUES (${url}, ${email});`;
         console.log(data);
         res.send(data);
     } catch (err) {
@@ -30,27 +31,18 @@ app.post('/send-url', async (req, res) => {
     }
 })
 
-
-app.get('/', async (req, res) => {
-    const { search } = req.query;
-    if (search) {
-        return res.redirect(`/search?search=${search}`);
+app.get('/history', async (req, res) => {
+    const { search, email } = req.query;
+    await client.sql`CREATE TABLE IF NOT EXISTS url_tracker (Url varchar(255), User_id varchar(255));`;
+    if (!search) {
+        const { rows } = await client.sql`SELECT * from url_tracker WHERE email = ${email};`;
+        console.log(rows);
+        return res.json(rows);
+    } else {
+        const { rows } = await client.sql`SELECT * from url_tracker WHERE email=${email} AND Url LIKE ${'%' + search + '%'};`;
+        console.log(rows);
+        return res.json(rows);
     }
-    try {
-        const { rows } = await client.sql`SELECT * from history;`;
-        res.render('./search.ejs', { rows: rows });
-    } catch (err) {
-        res.send(err);
-    } finally {
-        // client.end();
-    }
-})
-
-app.get('/search', async (req, res) => {
-    const { search } = req.query;
-    const { rows } = await client.sql`SELECT * from history WHERE Url LIKE ${'%' + search + '%'};`;
-    console.log(search);
-    res.render('./search.ejs', { rows: rows });
 })
 
 client.connect().then(() => {
