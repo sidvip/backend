@@ -35,15 +35,20 @@ app.get('/add-url', async (req, res) => {
 app.get('/history', async (req, res) => {
     const { search, email } = req.query;
     await client.sql`CREATE TABLE IF NOT EXISTS url_tracker (Url varchar(255), User_id varchar(255));`;
-    if (!search) {
-        const { rows } = await client.sql`SELECT * from url_tracker WHERE email = ${email};`;
-        console.log(rows);
-        return res.json(rows);
-    } else {
-        const { rows } = await client.sql`SELECT * from url_tracker WHERE email=${email} AND Url LIKE ${'%' + search + '%'};`;
-        console.log(rows);
-        return res.json(rows);
-    }
+    axios.get(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${email}`)
+        .then(async (response) => {
+            if (!search) {
+                const { rows } = await client.sql`SELECT * from url_tracker WHERE email = ${response?.data?.email};`;
+                console.log(rows);
+                return res.json(rows);
+            } else {
+                const { rows } = await client.sql`SELECT * from url_tracker WHERE email=${response?.data?.email} AND Url LIKE ${'%' + search + '%'};`;
+                console.log(rows);
+                return res.json(rows);
+            }
+        }).catch((error) => {
+            setError(error?.message)
+        })
 })
 
 app.get('/', (req, res) => {
