@@ -12,7 +12,8 @@ app.use(cors({
 }))
 
 const client = createClient({
-    connectionString: 'postgres://default:lVaf7WMOKJ8Y@ep-soft-bread-a44ca8gy.us-east-1.postgres.vercel-storage.com:5432/verceldb',
+    // connectionString: 'postgres://default:{password}@{host}/{database}',
+    connectionString: 'postgres://default:lVaf7WMOKJ8Y@ep-soft-bread-a44ca8gy.us-east-1.postgres.vercel-storage.com:5432/verceldb'
 })
 
 app.use(bodyparser.json());
