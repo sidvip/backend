@@ -46,6 +46,10 @@ app.get('/history', async (req, res) => {
     }
 })
 
+app.get('/', (req, res) => {
+    res.status(200).send('Backend is up and running ');
+})
+
 client.connect().then(() => {
     app.listen(port, () => {
         console.log(`Example app listening on port ${port}`)
