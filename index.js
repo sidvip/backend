@@ -20,6 +20,7 @@ app.get('/add-url', async (req, res) => {
     const { token, url } = req.query;
     axios.get(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${token}`)
         .then(async (response) => {
+            console.log('\n\n\n\n', response, '\n\n\n\n');
             try {
                 const d = await client.query(`CREATE TABLE IF NOT EXISTS url_tracker (url varchar(255), email varchar(255));`);
                 console.log("Table created", d);
@@ -41,11 +42,11 @@ app.get('/history', async (req, res) => {
     console.log("Table created", data);
 
     if (!search) {
-        const { rows } = await client.query(`SELECT * from url_tracker WHERE email='${response?.data?.email}';`);
+        const { rows } = await client.query(`SELECT * from url_tracker WHERE email='${email}';`);
         console.log("rows without search", rows);
         return res.json(rows || []);
     } else {
-        const { rows } = await client.query(`SELECT * from url_tracker WHERE email='${response?.data?.email}' AND Url LIKE '${'%' + search + '%'}';`);
+        const { rows } = await client.query(`SELECT * from url_tracker WHERE email='${email}' AND Url LIKE '${'%' + search + '%'}';`);
         console.log("rows with search", rows);
         return res.json(rows || []);
     }
