@@ -2,6 +2,7 @@ const express = require('express')
 const { Client } = require('pg');
 
 const axios = require('axios');
+
 const bodyparser = require('body-parser');
 const cors = require('cors');
 const app = express()
@@ -20,7 +21,7 @@ app.get('/add-url', async (req, res) => {
     try {
         const d = await client.query(`CREATE TABLE IF NOT EXISTS url_tracker (url varchar(255), email varchar(255));`);
         console.log(d);
-        const data = await client.query(`INSERT INTO url_tracker (Url, email) VALUES (${url}, ${email});`);
+        const data = await client.query(`INSERT INTO url_tracker (Url, email) VALUES ('${url}', '${email}');`);
         console.log(data);
         res.send(data || []);
     } catch (err) {
@@ -32,7 +33,7 @@ app.get('/add-url', async (req, res) => {
 app.get('/history', async (req, res) => {
     const { search, email } = req.query;
     const data = await client.query(`CREATE TABLE IF NOT EXISTS url_tracker (url varchar(255), email varchar(255));`);
-    console.log(data);
+    console.log(search, email);
     axios.get(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${email}`)
         .then(async (response) => {
             if (!search) {
