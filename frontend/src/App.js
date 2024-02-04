@@ -20,7 +20,7 @@ function App() {
 
   useEffect(() => {
     if (localStorage.getItem('email')) {
-      axios.get(`http://localhost:8000/history?email=${localStorage.getItem('email')}`)
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}?email=${localStorage.getItem('email')}`)
         .then(({ data }) => {
           setData(data);
         }).catch((error) => {
